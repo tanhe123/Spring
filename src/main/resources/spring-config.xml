@@ -4,6 +4,12 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 
-
+       <bean id="test" class="net.xiayule.spring.Test">
+              
+       </bean>
+       
+       <bean id="classPathResource" class="net.xiayule.spring.core.io.ClassPathResource">
+              <constructor-arg value="testConstructorValue"/>
+       </bean>
 
 </beans>
