@@ -4,7 +4,7 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 
-       <bean id="test" class="net.xiayule.spring.Test">
+       <bean id="test" name="testName1, testName2, testName3" class="net.xiayule.spring.Test">
               
        </bean>
        

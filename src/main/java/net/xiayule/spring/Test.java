@@ -1,12 +1,15 @@
 package net.xiayule.spring;
 
 
+import com.google.common.base.Splitter;
 import net.xiayule.spring.core.io.ClassPathResource;
+import net.xiayule.spring.util.StringUtils;
 import org.junit.Assert;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.stylesheets.LinkStyle;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -14,6 +17,8 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.lang.annotation.ElementType;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by tan on 14-12-15.
@@ -57,7 +62,12 @@ public class Test {
                     String id = ele.getAttribute("id");
                     String nameAttr = ele.getAttribute("name");
 
+                    // 提取别名
+                    // spirng中别名是用 [,; ] 分割的
+                    List<String> aliases = new ArrayList<String>();
+                    if (StringUtils.hasLength(nameAttr)) {
 
+                    }
                 }
 
                 System.out.println(ele);
