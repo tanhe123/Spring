@@ -18,6 +18,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.lang.annotation.ElementType;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -66,8 +67,15 @@ public class Test {
                     // spirng中别名是用 [,; ] 分割的
                     List<String> aliases = new ArrayList<String>();
                     if (StringUtils.hasLength(nameAttr)) {
+                        String[] nameArr = StringUtils.tokenizeToStringArray(nameAttr, ",; ");
+                        aliases.addAll(Arrays.asList(nameArr));
 
+                        System.out.println(aliases);
                     }
+
+                    String beanName = id;
+//                    todo: 判断 beanname，不能为空
+
                 }
 
                 System.out.println(ele);
