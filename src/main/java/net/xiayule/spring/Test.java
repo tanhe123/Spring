@@ -23,6 +23,11 @@ public class Test {
         ClassPathResource classPathResource = new ClassPathResource("spring-config.xml");
 
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+
+        // 解析XML的時候，如果將Namespace打开，则在解析生成document的時候，会查里面是否有Schema，查询xmln。
+        // 如果沒有还好，如果有的話，但是链接失效了，那么，就会返回很糟糕的数据。
+        factory.setNamespaceAware(false);
+
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document doc = builder.parse(classPathResource.getInputStream());
 
@@ -33,6 +38,28 @@ public class Test {
             Node node = nl.item(i);
             if (node instanceof Element) {
                 Element ele = (Element) node;
+
+
+                // 这里locaName啥意思呢?
+                // 如果有命名空间比如:
+                // xmlns:baidu="http://www.baidu.com"
+                /*<websites
+                xmlns:sina="http://www.sina.com"
+                xmlns:baidu="http://www.baidu.com">
+
+                <sina:website sina:blog="blog.sina.com">新浪</sina:website>
+                <baidu:website baidu:blog="hi.baidu.com">百度</baidu:website>
+                </websites>*/
+                // 那么 sina:blog中, blog就是localName
+                if (ele.getNodeName().equals("bean") || ele.getLocalName().equals("bean")) {
+                    System.out.println("检测到 bean 元素");
+
+                    String id = ele.getAttribute("id");
+                    String nameAttr = ele.getAttribute("name");
+
+
+                }
+
                 System.out.println(ele);
             }
         }
