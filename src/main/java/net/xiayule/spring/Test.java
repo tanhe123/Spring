@@ -2,6 +2,7 @@ package net.xiayule.spring;
 
 
 import com.google.common.base.Splitter;
+import net.xiayule.spring.beans.factory.support.BeanDefinition;
 import net.xiayule.spring.core.io.ClassPathResource;
 import net.xiayule.spring.util.StringUtils;
 import org.junit.Assert;
@@ -25,7 +26,7 @@ import java.util.List;
  * Created by tan on 14-12-15.
  */
 public class Test {
-    public static void main(String[] args) throws IOException, ParserConfigurationException, SAXException {
+    public static void main(String[] args) throws Exception {
         ClassPathResource classPathResource = new ClassPathResource("spring-config.xml");
 
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -88,6 +89,59 @@ public class Test {
                         className = ele.getAttribute("class").trim();
                     }
 
+                    String parentName = null;
+                    if (ele.hasAttribute("parent")) {
+                        parentName = ele.getAttribute("parent");
+                    }
+
+                    BeanDefinition bd = new BeanDefinition();
+                    bd.setParentName(parentName);
+
+                    if (className != null) {
+                        //todo: 加载类，如果加载失败
+
+
+                        bd.setBeanClassName(className);
+                    }
+
+                    // 解析 bean 的其他属性
+                    if (ele.hasAttribute("scope")) {
+                        // Spring 2.x "scope" attribute
+                        bd.setScope(ele.getAttribute("scope"));
+
+                        if (ele.hasAttribute("singleton")) {
+                            throw new Exception("Specify either 'scope' or 'singleton', not both");
+                        }
+                    } else if (ele.hasAttribute("singleton")) {
+                        // Spring 1.x "singleton" attribute
+                        bd.setScope("true".equals(ele.getAttribute("singleton")) ?
+                                "scope" : "prototype");
+                    } /*else if () {
+                       //todo: 继承 containingBean 的 scope 属性
+                    }*/
+
+                    // todo: abstrac 属性
+
+                    // todo:  lazy-init 属性
+
+                    // todo: autowrire 属性
+
+                    // todo: dependency-check 属性
+
+                    // todo: depends-on 属性
+
+                    // todo: autowire-candidate 属性
+
+                    // todo: primary 属性
+
+                    // todo: init-method 属性
+
+                    // todo: destroy-method 属性
+
+                    // todo: factory-method 属性
+
+                    // todo: factory-bean 属性
+
 
                 }
 
@@ -95,4 +149,5 @@ public class Test {
             }
         }
     }
+    
 }
