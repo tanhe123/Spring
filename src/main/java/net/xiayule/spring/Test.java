@@ -75,6 +75,19 @@ public class Test {
 
                     String beanName = id;
 //                    todo: 判断 beanname，不能为空
+//                    ...
+
+                    //todo: 检测是否已经重复定义了 beanName
+//                    ...
+
+
+                    // spring 中的parent指的是继承父类中的一些属性
+                    // 无需在子类中注入
+                    String className = null;
+                    if (ele.hasAttribute("class")) {
+                        className = ele.getAttribute("class").trim();
+                    }
+
 
                 }
 
