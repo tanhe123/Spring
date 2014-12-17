@@ -81,7 +81,6 @@ public class Test {
                     //todo: 检测是否已经重复定义了 beanName
 //                    ...
 
-
                     // spring 中的parent指的是继承父类中的一些属性
                     // 无需在子类中注入
                     String className = null;
@@ -89,65 +88,84 @@ public class Test {
                         className = ele.getAttribute("class").trim();
                     }
 
-                    String parentName = null;
+                    String parent = null;
                     if (ele.hasAttribute("parent")) {
-                        parentName = ele.getAttribute("parent");
+                        parent = ele.getAttribute("parent");
                     }
 
-                    BeanDefinition bd = new BeanDefinition();
-                    bd.setParentName(parentName);
+                    BeanDefinition bd = createBeanDefinition(className, parent);
 
-                    if (className != null) {
-                        //todo: 加载类，如果加载失败
-
-
-                        bd.setBeanClassName(className);
-                    }
-
-                    // 解析 bean 的其他属性
-                    if (ele.hasAttribute("scope")) {
-                        // Spring 2.x "scope" attribute
-                        bd.setScope(ele.getAttribute("scope"));
-
-                        if (ele.hasAttribute("singleton")) {
-                            throw new Exception("Specify either 'scope' or 'singleton', not both");
-                        }
-                    } else if (ele.hasAttribute("singleton")) {
-                        // Spring 1.x "singleton" attribute
-                        bd.setScope("true".equals(ele.getAttribute("singleton")) ?
-                                "scope" : "prototype");
-                    } /*else if () {
-                       //todo: 继承 containingBean 的 scope 属性
-                    }*/
-
-                    // todo: abstrac 属性
-
-                    // todo:  lazy-init 属性
-
-                    // todo: autowrire 属性
-
-                    // todo: dependency-check 属性
-
-                    // todo: depends-on 属性
-
-                    // todo: autowire-candidate 属性
-
-                    // todo: primary 属性
-
-                    // todo: init-method 属性
-
-                    // todo: destroy-method 属性
-
-                    // todo: factory-method 属性
-
-                    // todo: factory-bean 属性
-
-
+                    parseBeanDefinitionElement(ele, bd);
                 }
 
                 System.out.println(ele);
             }
         }
     }
-    
+
+    /**
+     * 根据给定的 class name 和 parent name 创建一个 BeanDefinition
+     * @param className bean 的 class name
+     * @param parentName bean 的 parent 的名字
+     * @return 新创建的 bean definition
+     */
+    public static BeanDefinition createBeanDefinition(String className, String parentName) throws ClassNotFoundException {
+        BeanDefinition bd = new BeanDefinition();
+        bd.setParentName(parentName);
+
+        if (className != null) {
+            //todo: 加载类，如果加载失败
+
+
+            bd.setBeanClassName(className);
+        }
+    }
+
+    /**
+     * 解析给定的bean element的属性到beandefinition
+     * @param ele bean declaration element
+     * @param bd bean name
+     * @throws Exception
+     */
+    public static void parseBeanDefinitionElement(Element ele, BeanDefinition bd) throws Exception {
+        // 解析 bean 的其他属性
+        if (ele.hasAttribute("scope")) {
+            // Spring 2.x "scope" attribute
+            bd.setScope(ele.getAttribute("scope"));
+
+            if (ele.hasAttribute("singleton")) {
+                throw new Exception("Specify either 'scope' or 'singleton', not both");
+            }
+        } else if (ele.hasAttribute("singleton")) {
+            // Spring 1.x "singleton" attribute
+            bd.setScope("true".equals(ele.getAttribute("singleton")) ?
+                    "scope" : "prototype");
+        } /*else if () {
+                       //todo: 继承 containingBean 的 scope 属性
+                    }*/
+
+        // todo: abstrac 属性
+
+        // todo:  lazy-init 属性
+
+        // todo: autowrire 属性
+
+        // todo: dependency-check 属性
+
+        // todo: depends-on 属性
+
+        // todo: autowire-candidate 属性
+
+        // todo: primary 属性
+
+        // todo: init-method 属性
+
+        // todo: destroy-method 属性
+
+        // todo: factory-method 属性
+
+        // todo: factory-bean 属性
+
+
+    }
 }
