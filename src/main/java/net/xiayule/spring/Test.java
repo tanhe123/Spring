@@ -2,6 +2,7 @@ package net.xiayule.spring;
 
 
 import com.google.common.base.Splitter;
+import net.xiayule.spring.beans.factory.config.BeanDefinitionHolder;
 import net.xiayule.spring.beans.factory.support.BeanDefinition;
 import net.xiayule.spring.core.io.ClassPathResource;
 import net.xiayule.spring.util.StringUtils;
@@ -61,47 +62,15 @@ public class Test {
                 if (ele.getNodeName().equals("bean") || ele.getLocalName().equals("bean")) {
                     System.out.println("检测到 bean 元素");
 
-                    String id = ele.getAttribute("id");
-                    String nameAttr = ele.getAttribute("name");
+                    BeanDefinitionHolder beanDefinitionHolder = parseBeanDefinitionElement(ele);
 
-                    // 提取别名
-                    // spirng中别名是用 [,; ] 分割的
-                    List<String> aliases = new ArrayList<String>();
-                    if (StringUtils.hasLength(nameAttr)) {
-                        String[] nameArr = StringUtils.tokenizeToStringArray(nameAttr, ",; ");
-                        aliases.addAll(Arrays.asList(nameArr));
-
-                        System.out.println(aliases);
-                    }
-
-                    String beanName = id;
-//                    todo: 判断 beanname，不能为空
-//                    ...
-
-                    //todo: 检测是否已经重复定义了 beanName
-//                    ...
-
-                    // spring 中的parent指的是继承父类中的一些属性
-                    // 无需在子类中注入
-                    String className = null;
-                    if (ele.hasAttribute("class")) {
-                        className = ele.getAttribute("class").trim();
-                    }
-
-                    String parent = null;
-                    if (ele.hasAttribute("parent")) {
-                        parent = ele.getAttribute("parent");
-                    }
-
-                    BeanDefinition bd = createBeanDefinition(className, parent);
-
-                    parseBeanDefinitionElement(ele, bd);
                 }
 
                 System.out.println(ele);
             }
         }
     }
+
 
     /**
      * 根据给定的 class name 和 parent name 创建一个 BeanDefinition
@@ -119,6 +88,79 @@ public class Test {
 
             bd.setBeanClassName(className);
         }
+
+        return bd;
+    }
+
+
+    /**
+     * 解析bean的定义
+     * 可能返回<code>null</code>
+     * @return 解析出 BeanDefinition, 如果解析出现了问题则会返回 <code>null</code>
+     * @throws Exception 
+     */
+    public static BeanDefinitionHolder parseBeanDefinitionElement(Element ele) throws Exception {
+        String id = ele.getAttribute("id");
+        String nameAttr = ele.getAttribute("name");
+
+        // 提取别名
+        // spirng中别名是用 [,; ] 分割的
+        List<String> aliases = new ArrayList<String>();
+        if (StringUtils.hasLength(nameAttr)) {
+            String[] nameArr = StringUtils.tokenizeToStringArray(nameAttr, ",; ");
+            aliases.addAll(Arrays.asList(nameArr));
+
+            System.out.println(aliases);
+        }
+
+        String beanName = id;
+//                    todo: 判断 beanname，不能为空
+//                    ...
+
+        //todo: 检测是否已经重复定义了 beanName
+//                    ...
+
+        BeanDefinition bd = parseBeanDefinitionElement(ele, beanName);
+
+        if (bd != null) {
+            if (!StringUtils.hasText(beanName)) {
+                // todo: 生成 beanName
+            }
+
+            String[] aliasesArray = StringUtils.toStringArray(aliases);
+            return new BeanDefinitionHolder(bd, beanName, aliasesArray);
+        }
+
+        return null;
+    }
+
+    public static BeanDefinition parseBeanDefinitionElement(Element ele, String beanName) throws Exception {
+        // spring 中的parent指的是继承父类中的一些属性
+        // 无需在子类中注入
+        String className = null;
+        if (ele.hasAttribute("class")) {
+            className = ele.getAttribute("class").trim();
+        }
+
+        String parent = null;
+        if (ele.hasAttribute("parent")) {
+            parent = ele.getAttribute("parent");
+        }
+
+        BeanDefinition bd = createBeanDefinition(className, parent);
+
+        parseBeanDefinitionElementAttributes(ele, bd);
+        // todo: description
+
+        // todo: meta 属性
+
+        // todo: constructor 属性
+
+        // todo: 设置 resource
+
+        // todo: 设置 source
+
+        return bd;
     }
 
     /**
@@ -127,7 +169,7 @@ public class Test {
      * @param bd bean name
      * @throws Exception
      */
-    public static void parseBeanDefinitionElement(Element ele, BeanDefinition bd) throws Exception {
+    public static void parseBeanDefinitionElementAttributes(Element ele, BeanDefinition bd) throws Exception {
         // 解析 bean 的其他属性
         if (ele.hasAttribute("scope")) {
             // Spring 2.x "scope" attribute
@@ -144,7 +186,7 @@ public class Test {
                        //todo: 继承 containingBean 的 scope 属性
                     }*/
 
-        // todo: abstrac 属性
+        // todo: abstract 属性
 
         // todo:  lazy-init 属性
 
