@@ -19,14 +19,24 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.lang.annotation.ElementType;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by tan on 14-12-15.
  */
 public class Test {
+
+    /**
+     * todo 至于为什么要使用 ConcurrentHashMap 要好好查查
+     */
+    private static final Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<String, BeanDefinition>();
+
+    /**
+     * bean definition 的  names, 按注册顺序排列
+     */
+    private static final List<String> beanDefinitionNames = new ArrayList<String>();
+
     public static void main(String[] args) throws Exception {
         ClassPathResource classPathResource = new ClassPathResource("spring-config.xml");
 
@@ -64,11 +74,39 @@ public class Test {
 
                     BeanDefinitionHolder beanDefinitionHolder = parseBeanDefinitionElement(ele);
 
+                    if (beanDefinitionHolder != null) {
+                        //todo: 注册 bean
+                        registerBeanDefinition(beanDefinitionHolder);
+                    }
                 }
 
                 System.out.println(ele);
             }
         }
+    }
+
+    private static void registerBeanDefinition(BeanDefinitionHolder beanDefinitionHolder) {
+        String beanName = beanDefinitionHolder.getBeanName();
+        BeanDefinition beanDefinition = beanDefinitionHolder.getBeanDefinition();
+
+        // 使用 primary name 即 id 注册 bean {
+
+        // todo 调用 validate
+
+        // 注册
+        synchronized (beanDefinitionMap) {
+            Object oldBeanDefinition = beanDefinitionMap.get(beanName);
+            if (oldBeanDefinition != null) {
+                // todo: 检测是否配置了可以覆盖定义
+            } else {
+                beanDefinitionNames.add(beanName);
+
+            }
+
+            beanDefinitionMap.put(beanName, beanDefinition);
+        }
+
+        // }
     }
 
 
